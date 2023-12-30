@@ -27,7 +27,8 @@ export default async (req, res) => {
             PostContent,
             PostSubject,
             PostEmail,
-            createdAt: new Date()
+            createdAt: new Date(),
+            EmailsSent: 0
         };
 
         // Insert the new post into the 'Posts' collection
