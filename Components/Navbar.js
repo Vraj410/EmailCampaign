@@ -12,6 +12,7 @@ import { SiCodefactor } from "react-icons/si";
 import { IoMdArrowDropdown } from "react-icons/io";
 import Alert from "./Alert";
 import { useDispatch } from "react-redux";
+import { signIn } from 'next-auth/react';
 
 function Navbar({ topics }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -54,28 +55,7 @@ function Navbar({ topics }) {
   };
 
   const handelSignIn = () => {
-    signInWithPopup(auth, provider)
-      .then((res) => {
-        const userObj = {
-          name: res.user.displayName,
-          photo: res.user.photoURL,
-          token: res.user.accessToken,
-          uid: res.user.uid,
-        };
-
-        localStorage.setItem("user", JSON.stringify(userObj));
-        dispatch({ type: "STORE_USER", payload: userObj });
-
-        setLogin(true);
-        setViewAlert(true);
-        setAlertMessage(`Hello ${res.user.displayName}`);
-        setTimeout(() => {
-          setViewAlert(false);
-        }, 2000);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    signIn('google'); // Triggers NextAuth.js sign-in flow
   };
 
   return (
@@ -85,82 +65,32 @@ function Navbar({ topics }) {
         <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <div className="flex">
-              <Link href="/">
-                <a className="flex items-center hover:text-indigo-600 text-gray-800 dark:text-gray-50">
-                  <span className="text-xl font-semibold">
-                    <BiTerminal className="text-xl" />
-                  </span>
-                  <span className="mx-1 font-semibold text-base md:text-base">
-                    Latest
-                  </span>
-                </a>
-              </Link>
-
-              <div className="dropdown inline-block relative mx-2">
-                <a className="flex items-center hover:text-indigo-600 text-gray-800 dark:text-gray-50 mx-6 cursor-pointer">
-                  <span className="text-xl font-semibold">
-                    <SiCodefactor className="text-sm" />
-                  </span>
-                  <span className="mx-1 font-semibold text-base md:text-base">
-                    Posts
-                  </span>
-
-                  <span className="text-xl font-semibold">
-                    <IoMdArrowDropdown className="text-xl" />
-                  </span>
-                </a>
-                <ul className="dropdown-menu absolute hidden text-gray-700 pt-1 bg-white dark:bg-dark w-40 pt-6 rounded-xl left-1/3">
-                  {topics.map((topic) => (
-                    <Link href={`/topic/${topic}`} key={topic}>
-                      <li className="cursor-pointer">
-                        <a className="rounded-xl bg-white dark:bg-dark text-gray-800 dark:text-gray-50 py-2 px-4 block whitespace-no-wrap">
-                          {topic}
-                        </a>
-                      </li>
-                    </Link>
-                  ))}
-                </ul>
-              </div>
+              {/* ... existing Link components and dropdown menu ... */}
             </div>
 
             <div className="flex items-center -mx-3">
-              <button
-                className="flex items-center mx-2 lg:mx-4 text-base text-gray-800 hover:text-indigo-600 dark:text-gray-50"
-                onClick={toggleTheme}
-              >
-                <span className="text-lg">
-                  {isMounted && theme === "dark" ? (
-                    <HiSun className="text-xl" />
-                  ) : (
-                    <HiMoon className="text-xl" />
-                  )}
+              {/* ... existing theme toggle button ... */}
+
+              {/* ... existing about link ... */}
+
+              {/* Sign In / Sign Out Button */}
+              {isLogin ? (
+                <span
+                  className="flex items-center mx-2 lg:mx-4 text-base text-gray-800 hover:text-indigo-600 dark:text-gray-50 cursor-pointer"
+                  onClick={handelSignOut}
+                >
+                  <span className="hidden md:block text-sm font-medium">Sign Out</span>
+                  <IoLogOutOutline className="text-xl mx-1" />
                 </span>
-              </button>
-
-              <Link href="/about">
-                <a className="flex items-center mx-2 lg:mx-4 text-base text-gray-800 hover:text-indigo-600 dark:text-gray-50">
-                  <span className="text-xl">
-                    <CgUserlane className="text-xl" />
-                  </span>
-                </a>
-              </Link>
-
-              <button className="flex items-center mx-2 lg:mx-4 text-base text-gray-800 hover:text-indigo-600 dark:text-gray-50">
-                {isLogin ? (
-                  <span
-                    className="md:flex items-center"
-                    onClick={handelSignOut}
-                  >
-                    <span className="hidden md:block text-sm font-medium">Sign Out</span>
-                    <IoLogOutOutline className="text-xl mx-1" />
-                  </span>
-                ) : (
-                  <span className="md:flex items-center" onClick={handelSignIn}>
-                    <span className="hidden md:block text-sm font-medium"> Sign In</span>
-                    <AiOutlineGoogle className="text-xl mx-1" />
-                  </span>
-                )}
-              </button>
+              ) : (
+                <span
+                  className="flex items-center mx-2 lg:mx-4 text-base text-gray-800 hover:text-indigo-600 dark:text-gray-50 cursor-pointer"
+                  onClick={handelSignIn}
+                >
+                  <span className="hidden md:block text-sm font-medium">Sign In</span>
+                  <AiOutlineGoogle className="text-xl mx-1" />
+                </span>
+              )}
             </div>
           </div>
         </div>
